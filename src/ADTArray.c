@@ -29,19 +29,23 @@ ADTArray* ADTArrayCreate(int Capacity)
     return obj;
 }
 
-void ADTArrayFree(ADTArray* obj)
-{
+void _ADTArrayFreeData(void** Data, int MinIdx,int MaxIdx){
     int i;
 
+    for(i = MinIdx; i < MaxIdx; i++){
+        if(Data[i] != NULL){
+            free(Data[i]);
+        }
+    }
+}
+
+void ADTArrayFree(ADTArray* obj)
+{
     if(obj == NULL){
         return;
-    }
+    }  
 
-    for(i = 0; i < obj->MaxCapacity + 1; i++){
-        if(obj->Data[i] != NULL){
-            free(obj->Data[i]);
-        }
-    }    
+    _ADTArrayFreeData(obj->Data,0,obj->MaxCapacity + 1); 
 
     free(obj->Data);
     free(obj);
@@ -95,18 +99,14 @@ ADTArray* ADTArrayResize(ADTArray* obj, int NewCapacity)
 
     void** NewData = malloc(NewCapacity * sizeof(void*));
     
-
     for(i = 0; i < NewCapacity;i++){
+        //swapping pointers to items.
         NewData[i] = obj->Data[i];
     }
 
     offset = obj->MaxCapacity - NewCapacity;
     if(offset < 0){
-        for(i = NewCapacity;i < obj->MaxCapacity + 1;i++){
-            if(obj->Data[i] != NULL){
-                free(obj->Data[i]);
-            }
-        }
+        _ADTArrayFreeData(obj->Data,NewCapacity,obj->MaxCapacity + 1);
     }
 
     free(obj->Data);
