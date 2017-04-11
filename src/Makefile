@@ -1,7 +1,13 @@
-UTILNAME := ADTArray
+ADTArray := ADTArray
+ADTStack := ADTStack
 FLAGS := -Wall
 
-all:
-	gcc $(UTILNAME).c $(FLAGS) -o $(UTILNAME)
+all: ADTArray ADTStack
+
+ADTStack:
+	gcc $(ADTStack).c $(FLAGS) -o $(ADTStack)
+ADTArray:
+	gcc $(ADTArray).c $(FLAGS) -o $(ADTArray)
 clean:
-	rm $(UTILNAME)
+	rm $(ADTArray)
+	rm $(ADTStack)
