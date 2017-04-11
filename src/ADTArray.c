@@ -204,19 +204,19 @@ void ADTArrayRemove(ADTArray* obj, int idx)
 }
 
 
-int main()
-{
-    ADTArray* arr = ADTArrayCreate(100);
-    ADTArrayResize(arr,50);
+// int main()
+// {
+//     ADTArray* arr = ADTArrayCreate(100);
+//     ADTArrayResize(arr,50);
 
-    int item1 = 1;
-    ADTArraySet(arr,0,&item1);
+//     int item1 = 1;
+//     ADTArraySet(arr,0,&item1);
     
-    int temp = *(int*)ADTArrayGet(arr,0);
-    printf(":::%d\n",temp);
+//     int temp = *(int*)ADTArrayGet(arr,0);
+//     printf(":::%d\n",temp);
 
-    ADTArrayClearItem(arr,0);
+//     ADTArrayClearItem(arr,0);
 
-    ADTArrayFree(arr);
-    return 0;
-}
+//     ADTArrayFree(arr);
+//     return 0;
+// }
