@@ -74,7 +74,7 @@ void* ADTStackPush(ADTStack* obj, void* item)
     if(obj == NULL){
         return NULL;
     }
-    else if(obj->TopPosition == obj->Capacity -1){
+    else if(obj->TopPosition == obj->Capacity){
         return NULL;
     }
 
@@ -92,10 +92,10 @@ void ADTStackPop(ADTStack* obj){
     else if(obj->TopPosition < 0){
         return;
     }
-
+    
+    free(obj->Data[obj->TopPosition -1]);
+    obj->Data[obj->TopPosition -1] = NULL;
     obj->TopPosition--;
-    free(obj->Data[obj->TopPosition]);
-    obj->Data[obj->TopPosition] = NULL;
 }
 
 ADTStack* ADTStackResize(ADTStack* obj, int NewCapacity)
