@@ -26,8 +26,8 @@
 
 typedef struct
 {
-    size_t size;
-    size_t capacity;
+    unsigned int size;
+    unsigned int capacity;
     void** data;
 } ADTStack;
 
@@ -46,11 +46,23 @@ ADTStack* ADTStackCreate(int capacity)
     return obj;
 }
 
+void _ADTStackFreeData(ADTStack* obj, unsigned int minidx,unsigned int maxidx){
+    int i;
+
+    for(i = minidx; i < maxidx +1; i++){
+        if(obj->data[i] != NULL){
+            free(obj->data[i]);
+        }
+    }
+}
+
 int ADTStackFree(ADTStack* obj)
 {
     if(obj == NULL){
         return EXIT_FAILURE;
     }  
+
+    _ADTStackFreeData(obj,0,obj->capacity);
 
     free(obj->data);
     free(obj);
@@ -105,37 +117,52 @@ int ADTStackPop(ADTStack* obj){
     return EXIT_FAILURE;
 }
 
-ADTStack* ADTStackResize(ADTStack* obj, int Newcapacity)
+ADTStack* ADTStackResize(ADTStack* obj, int newcapacity)
 {
-    if(obj == NULL || Newcapacity < 0){
+    if(obj == NULL || newcapacity < 0){
         return NULL;
     }
 
     int i;
-    void** Newdata = malloc(Newcapacity * sizeof(void*));
+    void** newdata = malloc(newcapacity * sizeof(void*));
     
-    for(i = 0; i < Newcapacity;i++){
+    for(i = 0; i < newcapacity;i++){
         //swapping pointers to items.
-        Newdata[i] = obj->data[i];
+        newdata[i] = obj->data[i];
+    }
+
+    if((newcapacity - obj->capacity) > 0){
+        if(obj->size > newcapacity){
+            obj->size -= newcapacity; 
+        }
+        _ADTStackFreeData(obj,newcapacity,obj->capacity);
     }
 
     free(obj->data);
-    obj->data = Newdata;
-    obj->capacity = Newcapacity;
+    obj->data = newdata;
+    obj->capacity = newcapacity;
 
     return obj;
 }
 
 int main()
 {
-    ADTStack* arr = ADTStackCreate(100);
-    ADTStackResize(arr,50);
+    int i;
 
-    int item1 = 1;
-    ADTStackPush(arr,&item1);
+    ADTStack* arr = ADTStackCreate(100);
     
-    int temp = *(int*)ADTStackTop(arr);
+
+    for(i =0;i< 100;i++){
+        ADTStackPush(arr,&i);
+    }
+
+    ADTStackResize(arr,10);
     
+    //int 
+    int temp = *(int*)arr->data[9]; 
+    //temp = *(int*)ADTStackTop(arr); 
+
+    printf("SIZE:::%d\n",ADTStackSize(arr));  
 
     ADTStackPop(arr);
     printf(":::%d\n",temp);

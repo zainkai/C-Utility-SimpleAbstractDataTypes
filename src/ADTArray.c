@@ -104,11 +104,11 @@ void* ADTArraySet(ADTArray* obj,int idx, void* item)
         return NULL;
     }
 
-    void* TempItem = malloc(sizeof(void*));
-    memcpy(TempItem,item,sizeof(void*));
+    void* temp_Item = malloc(sizeof(void*));
+    memcpy(temp_Item,item,sizeof(void*));
     obj->size++;
 
-    return obj->data[idx] = TempItem;
+    return obj->data[idx] = temp_Item;
 }
 
 int ADTArrayClearItem(ADTArray* obj,int idx){
@@ -140,7 +140,6 @@ ADTArray* ADTArrayResize(ADTArray* obj, int newcapacity)
         Newdata[i] = obj->data[i];
     }
 
-    //check if offset is negative
     if((newcapacity - obj->capacity) > 0){
         if(obj->size > newcapacity){
             obj->size -= newcapacity; 
@@ -155,53 +154,49 @@ ADTArray* ADTArrayResize(ADTArray* obj, int newcapacity)
     return obj;
 }
 
-// int ADTArrayInsert(ADTArray* obj, int idx, void* item)
-// {
-//     if(obj == NULL || idx < -1){
-//         return EXIT_FAILURE;
-//     }
-//     else if(obj->capacity >= idx || (obj->data[idx] == NULL)){
-//         return EXIT_FAILURE;
-//     }
-//     else if(idx == -1){
-//         idx = obj->size -1;
-//     }
+int ADTArrayInsert(ADTArray* obj, int idx, void* item)
+{
+    int i;
 
-//     int i;
+    if(obj == NULL || idx < 0){
+        return EXIT_FAILURE;
+    }
+    else if(obj->capacity <= idx){
+        return EXIT_FAILURE;
+    }
 
-//     for(i = idx; i < obj->capacity;i++){
-//         if(i == idx){
-//             obj->data[i] = item;
-//         }
-//         else if(i > idx){
-//             obj->data[i] = obj->data[i + 1]; 
-//         }
-//     }
+    for(i = idx; i < obj->capacity - 1;i++){
+        obj->data[i + 1] = obj->data[i]; 
+    }
 
-//     obj->size++;
+    ADTArraySet(obj,idx,item);
 
-//     return EXIT_SUCCESS;
-// }
+    obj->size++;
 
-// void ADTArrayRemove(ADTArray* obj, int idx)
-// {
-//     if(obj == NULL || idx < -1){
-//         return;
-//     }
-//     else if(idx == -1){
-//         idx = obj->size -1;
-//     }
+    return EXIT_SUCCESS;
+}
 
-//     int i;
+int ADTArrayRemove(ADTArray* obj, int idx)
+{
+    int i;
 
-//     free(obj->data[idx]);
+    if(obj == NULL || idx < 0){
+        return EXIT_FAILURE;
+    }
+    else if(obj->capacity <= idx){
+        return EXIT_FAILURE;
+    }
 
-//     for(i = idx; i < obj->size - 1; i++){
-//         obj->data[i] = obj->data[i+1];
-//     }
+    free(obj->data[idx]);
 
-//     obj->size--;
-// }
+    for(i = idx; i < obj->size - 1; i++){
+        obj->data[i] = obj->data[i+1];
+    }
+
+    obj->size--;
+
+    return EXIT_SUCCESS;
+}
 
 
 int main()
@@ -224,6 +219,7 @@ int main()
 
     item1 = 69;
     ADTArrayInsert(arr,3,&item1);
+    ADTArrayRemove(arr,3);
 
     temp = *(int*)ADTArrayGet(arr,3);
     printf(":::%d\n",temp);
