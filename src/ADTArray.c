@@ -26,52 +26,53 @@
 
 typedef struct
 {
-    int Current;
-    int Capacity;
-    void** Data;
+    unsigned int size;
+    unsigned int capacity;
+    void** data;
 } ADTArray;
 
-ADTArray* ADTArrayCreate(int Capacity)
+ADTArray* ADTArrayCreate(int init_capacity)
 {
-    if(Capacity == 0){
+    int i;
+
+    if(init_capacity == 0){
         return NULL;
     }
 
-    int i;
-
     ADTArray* obj = malloc(sizeof(ADTArray));
-    obj->Data = malloc(Capacity * sizeof(void*));
+    obj->data = malloc(init_capacity * sizeof(void*));
+    obj->capacity = init_capacity;
+    obj->size = 0;
 
-    for(i = 0;i < Capacity; i++){
-        obj->Data[i] = NULL;
+    for(i = 0; i < init_capacity + 1;i++){
+        obj->data[i] = NULL;
     }
-
-    obj->Capacity = Capacity;
-    obj->Current = 0;
 
     return obj;
 }
 
-void _ADTArrayFreeData(void** Data, int MinIdx,int MaxIdx){
+void _ADTArrayFreeData(ADTArray* obj, unsigned int minidx,unsigned int maxidx){
     int i;
 
-    for(i = MinIdx; i < MaxIdx +1; i++){
-        if(Data[i] != NULL){
-            free(Data[i]);
+    for(i = minidx; i < maxidx +1; i++){
+        if(obj->data[i] != NULL){
+            free(obj->data[i]);
         }
     }
 }
 
-void ADTArrayFree(ADTArray* obj)
+int ADTArrayFree(ADTArray* obj)
 {
     if(obj == NULL){
-        return;
-    }  
+        return EXIT_FAILURE;
+    }
 
-    _ADTArrayFreeData(obj->Data,0,obj->Capacity); 
+    _ADTArrayFreeData(obj,0,obj->capacity); 
 
-    free(obj->Data);
+    free(obj->data);
     free(obj);
+
+    return EXIT_SUCCESS;
 }
 
 int ADTArraySize(ADTArray* obj){
@@ -79,7 +80,7 @@ int ADTArraySize(ADTArray* obj){
         return -1;
     }
     
-    return obj->Current;
+    return obj->size;
 }
 
 void* ADTArrayGet(ADTArray* obj, int idx)
@@ -87,136 +88,148 @@ void* ADTArrayGet(ADTArray* obj, int idx)
     if(obj == NULL){
         return NULL;
     }
-    else if(idx == -1){
-        idx = obj->Current -1;
+    else if(obj->capacity <= idx){
+        return NULL;
     }
 
-    return obj->Data[idx];
+    return obj->data[idx];
 }
 
 void* ADTArraySet(ADTArray* obj,int idx, void* item)
 {
-    if(obj == NULL || idx < -1){
+    if(obj == NULL || idx < 0){
         return NULL;
     }
-    else if(obj->Capacity < idx){
+    else if(obj->capacity <= idx){
         return NULL;
-    }
-    else if(idx == -1){
-        idx = obj->Current -1;
     }
 
     void* TempItem = malloc(sizeof(void*));
     memcpy(TempItem,item,sizeof(void*));
-    obj->Current++;
+    obj->size++;
 
-    return obj->Data[idx] = TempItem;
+    return obj->data[idx] = TempItem;
 }
 
-ADTArray* ADTArrayClearItem(ADTArray* obj,int idx){
-    if(obj == NULL || idx < -1){
-        return NULL;
+int ADTArrayClearItem(ADTArray* obj,int idx){
+    if(obj == NULL || idx < 0){
+        return EXIT_FAILURE;
     }
-    else if(obj->Capacity < idx || (obj->Data[idx] == NULL)){
-        return NULL;
-    }
-    else if(idx == -1){
-        idx = obj->Current -1;
+    else if(obj->capacity >= idx){
+        return EXIT_FAILURE;
     }
 
-    free(obj->Data[idx]);
-    obj->Data[idx] = NULL;
-    obj->Current--;
+    free(obj->data[idx]);
+    obj->data[idx] = NULL;
+    obj->size--;
 
-    return obj;
+    return EXIT_SUCCESS;
 }
 
-ADTArray* ADTArrayResize(ADTArray* obj, int NewCapacity)
+ADTArray* ADTArrayResize(ADTArray* obj, int newcapacity)
 {
-    if(obj == NULL || NewCapacity < 0){
+    if(obj == NULL || newcapacity <= 0){
         return NULL;
     }
 
     int i;
-    void** NewData = malloc(NewCapacity * sizeof(void*));
+    void** Newdata = malloc(newcapacity * sizeof(void*));
     
-    for(i = 0; i < NewCapacity;i++){
+    for(i = 0; i < newcapacity;i++){
         //swapping pointers to items.
-        NewData[i] = obj->Data[i];
+        Newdata[i] = obj->data[i];
     }
 
     //check if offset is negative
-    if((obj->Capacity - NewCapacity) < 0){
-        if(obj->Current > NewCapacity){
-            obj->Current -= NewCapacity; 
+    if((newcapacity - obj->capacity) > 0){
+        if(obj->size > newcapacity){
+            obj->size -= newcapacity; 
         }
-        _ADTArrayFreeData(obj->Data,NewCapacity,obj->Capacity);
+        _ADTArrayFreeData(obj,newcapacity,obj->capacity);
     }
 
-    free(obj->Data);
-    obj->Data = NewData;
-    obj->Capacity = NewCapacity;
+    free(obj->data);
+    obj->data = Newdata;
+    obj->capacity = newcapacity;
 
     return obj;
 }
 
-void* ADTArrayInsert(ADTArray* obj, int idx, void* item)
-{
-    if(obj == NULL || idx < -1){
-        return NULL;
-    }
-    else if(obj->Current == obj->Capacity){
-        return NULL;
-    }
-    else if(idx == -1){
-        idx = obj->Current -1;
-    }
-
-    int i;
-
-    for(i = obj->Current; i > idx;i--){
-        obj->Data[i] = obj->Data[i -1]; 
-    }
-
-    obj->Current++;
-
-    return obj->Data[idx] = item;
-}
-
-void ADTArrayRemove(ADTArray* obj, int idx)
-{
-    if(obj == NULL || idx < -1){
-        return;
-    }
-    else if(idx == -1){
-        idx = obj->Current -1;
-    }
-
-    int i;
-
-    free(obj->Data[idx]);
-
-    for(i = idx; i < obj->Current - 1; i++){
-        obj->Data[i] = obj->Data[i+1];
-    }
-
-    obj->Current--;
-}
-
-
-// int main()
+// int ADTArrayInsert(ADTArray* obj, int idx, void* item)
 // {
-//     ADTArray* arr = ADTArrayCreate(100);
-//     ADTArrayResize(arr,50);
+//     if(obj == NULL || idx < -1){
+//         return EXIT_FAILURE;
+//     }
+//     else if(obj->capacity >= idx || (obj->data[idx] == NULL)){
+//         return EXIT_FAILURE;
+//     }
+//     else if(idx == -1){
+//         idx = obj->size -1;
+//     }
 
-//     int item1 = 1;
-//     ADTArraySet(arr,0,&item1);
-    
-//     int temp = *(int*)ADTArrayGet(arr,0);
-//     printf(":::%d\n",temp);
+//     int i;
 
-//     ADTArrayClearItem(arr,0);
+//     for(i = idx; i < obj->capacity;i++){
+//         if(i == idx){
+//             obj->data[i] = item;
+//         }
+//         else if(i > idx){
+//             obj->data[i] = obj->data[i + 1]; 
+//         }
+//     }
 
-//     ADTArrayFree(arr);
-//     return 0;
+//     obj->size++;
+
+//     return EXIT_SUCCESS;
 // }
+
+// void ADTArrayRemove(ADTArray* obj, int idx)
+// {
+//     if(obj == NULL || idx < -1){
+//         return;
+//     }
+//     else if(idx == -1){
+//         idx = obj->size -1;
+//     }
+
+//     int i;
+
+//     free(obj->data[idx]);
+
+//     for(i = idx; i < obj->size - 1; i++){
+//         obj->data[i] = obj->data[i+1];
+//     }
+
+//     obj->size--;
+// }
+
+
+int main()
+{
+    int item1 = 39;
+
+    ADTArray* arr = ADTArrayCreate(100);
+    printf("arrayCap:%d\n",arr->capacity);
+    ADTArraySet(arr,88,&item1);
+    ADTArrayResize(arr,10);
+    printf("arrayCap:%d\n",arr->capacity);
+
+    
+    ADTArraySet(arr,0,&item1);
+    
+    int temp = *(int*)ADTArrayGet(arr,0);
+    printf(":::%d\n",temp);
+
+    ADTArrayClearItem(arr,0);
+
+    item1 = 69;
+    ADTArrayInsert(arr,3,&item1);
+
+    temp = *(int*)ADTArrayGet(arr,3);
+    printf(":::%d\n",temp);
+
+    ADTArrayFree(arr);
+
+
+    return 0;
+}

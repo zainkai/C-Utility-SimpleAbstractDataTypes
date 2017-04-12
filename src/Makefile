@@ -1,13 +1,13 @@
 ADTArray := ADTArray
 ADTStack := ADTStack
-FLAGS := -Wall -c
+FLAGS := -Wall -g
 
 all: ADTArray ADTStack
 
 ADTStack:
-	gcc $(ADTStack).c $(FLAGS)
+	gcc $(ADTStack).c $(FLAGS) -o $(ADTStack)
 ADTArray:
-	gcc $(ADTArray).c $(FLAGS)
+	gcc $(ADTArray).c $(FLAGS) -o $(ADTArray)
 clean:
-	rm $(ADTArray).o
-	rm $(ADTStack).o
+	rm $(ADTArray)
+	rm $(ADTStack)
