@@ -104,11 +104,11 @@ void* ADTArraySet(ADTArray* obj,int idx, void* item)
         return NULL;
     }
 
-    void* temp_Item = malloc(sizeof(void*));
-    memcpy(temp_Item,item,sizeof(void*));
+    void* temp_item = malloc(sizeof(void*));
+    memcpy(temp_item,item,sizeof(void*));
     obj->size++;
 
-    return obj->data[idx] = temp_Item;
+    return obj->data[idx] = temp_item;
 }
 
 int ADTArrayClearItem(ADTArray* obj,int idx){
@@ -169,9 +169,11 @@ int ADTArrayInsert(ADTArray* obj, int idx, void* item)
         obj->data[i + 1] = obj->data[i]; 
     }
 
-    ADTArraySet(obj,idx,item);
+    void* temp_item = malloc(sizeof(void*));
+    memcpy(temp_item,item,sizeof(void*));
 
     obj->size++;
+    obj->data[idx] = temp_item;
 
     return EXIT_SUCCESS;
 }
@@ -219,7 +221,7 @@ int main()
 
     item1 = 69;
     ADTArrayInsert(arr,3,&item1);
-    ADTArrayRemove(arr,3);
+    //ADTArrayRemove(arr,3);
 
     temp = *(int*)ADTArrayGet(arr,3);
     printf(":::%d\n",temp);
