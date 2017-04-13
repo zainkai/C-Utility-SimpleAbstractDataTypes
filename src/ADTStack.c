@@ -33,15 +33,15 @@ typedef struct
     unsigned int size;
     unsigned int capacity;
     TYPE* data;
-} ADTStack;
+} adt_stk;
 
-ADTStack* ADTStackCreate(int capacity)
+adt_stk* adt_stkCreate(int capacity)
 {
     if(capacity == 0){
         return NULL;
     }
 
-    ADTStack* obj = malloc(sizeof(ADTStack));
+    adt_stk* obj = malloc(sizeof(adt_stk));
 
     obj->data = malloc(capacity * sizeof(TYPE));
     obj->capacity = capacity;
@@ -50,7 +50,7 @@ ADTStack* ADTStackCreate(int capacity)
     return obj;
 }
 
-void _ADTStackFreeData(ADTStack* obj, unsigned int minidx,unsigned int maxidx){
+void _adt_stkFreeData(adt_stk* obj, unsigned int minidx,unsigned int maxidx){
     int i;
 
     for(i = minidx; i < maxidx +1; i++){
@@ -58,13 +58,13 @@ void _ADTStackFreeData(ADTStack* obj, unsigned int minidx,unsigned int maxidx){
     }
 }
 
-int ADTStackFree(ADTStack* obj)
+int adt_stkFree(adt_stk* obj)
 {
     if(obj == NULL){
         return EXIT_FAILURE;
     }  
 
-    _ADTStackFreeData(obj,0,obj->capacity);
+    _adt_stkFreeData(obj,0,obj->capacity);
 
     free(obj->data);
     SAFE_FREE(obj);
@@ -72,7 +72,7 @@ int ADTStackFree(ADTStack* obj)
     return EXIT_SUCCESS;
 }
 
-int ADTStackSize(ADTStack* obj){
+int adt_stkSize(adt_stk* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
     }
@@ -80,7 +80,7 @@ int ADTStackSize(ADTStack* obj){
     return obj->size;
 }
 
-TYPE ADTStackTop(ADTStack* obj)
+TYPE adt_stkTop(adt_stk* obj)
 {
     if(obj == NULL){
         return NULL;
@@ -91,7 +91,7 @@ TYPE ADTStackTop(ADTStack* obj)
     return obj->data[obj->size -1];
 }
 
-TYPE ADTStackPush(ADTStack* obj, TYPE item)
+TYPE adt_stkPush(adt_stk* obj, TYPE item)
 {
     if(obj == NULL || item == NULL){
         return NULL;
@@ -106,7 +106,7 @@ TYPE ADTStackPush(ADTStack* obj, TYPE item)
     return obj->data[obj->size -1] = temp_item;
 }
 
-int ADTStackPop(ADTStack* obj){
+int adt_stkPop(adt_stk* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
     } else if(obj->size == 0) {
@@ -119,7 +119,7 @@ int ADTStackPop(ADTStack* obj){
     return EXIT_FAILURE;
 }
 
-ADTStack* ADTStackResize(ADTStack* obj, int newcapacity)
+adt_stk* adt_stkResize(adt_stk* obj, int newcapacity)
 {
     if(obj == NULL || newcapacity < 0){
         return NULL;
@@ -137,7 +137,7 @@ ADTStack* ADTStackResize(ADTStack* obj, int newcapacity)
         if(obj->size > newcapacity){
             obj->size -= newcapacity; 
         }
-        _ADTStackFreeData(obj,newcapacity,obj->capacity);
+        _adt_stkFreeData(obj,newcapacity,obj->capacity);
     }
 
     free(obj->data);
@@ -151,26 +151,26 @@ int main()
 {
     int i;
 
-    ADTStack* arr = ADTStackCreate(100);
+    adt_stk* arr = adt_stkCreate(100);
     
 
     for(i =0;i< 100;i++){
-        ADTStackPush(arr,&i);
+        adt_stkPush(arr,&i);
     }
 
-    ADTStackResize(arr,10);
+    adt_stkResize(arr,10);
     
     //int 
     int temp = *(int*)arr->data[9]; 
-    //temp = *(int*)ADTStackTop(arr); 
+    //temp = *(int*)adt_stkTop(arr); 
 
-    printf("SIZE:::%d\n",ADTStackSize(arr));  
+    printf("SIZE:::%d\n",adt_stkSize(arr));  
 
-    ADTStackPop(arr);
+    adt_stkPop(arr);
     printf(":::%d\n",temp);
-    ADTStackPop(arr);
+    adt_stkPop(arr);
 
-    ADTStackFree(arr);
+    adt_stkFree(arr);
 
     return 0;
 }

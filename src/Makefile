@@ -1,13 +1,13 @@
-ADTArray := ADTArray
+ADTArray_NC := ADTArray_NonContiguous
 ADTStack := ADTStack
 FLAGS := -Wall -g
 
-all: ADTArray ADTStack
+all: ADTArray_NC ADTStack
 
 ADTStack:
 	gcc $(ADTStack).c $(FLAGS) -o $(ADTStack)
-ADTArray:
-	gcc $(ADTArray).c $(FLAGS) -o $(ADTArray)
+ADTArray_NC:
+	gcc $(ADTArray_NC).c $(FLAGS) -o $(ADTArray_NC)
 clean:
-	rm $(ADTArray)
+	rm $(ADTArray_NC)
 	rm $(ADTStack)
