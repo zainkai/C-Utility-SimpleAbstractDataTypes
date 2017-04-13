@@ -21,7 +21,7 @@
 **************************************************************************************/
 
 /**********************************
- ** NON CONTIGUOUS ARRAY LIBRARY **
+ **   CONTIGUOUS ARRAY LIBRARY   **
 ***********************************/
 #include <stdio.h>
 #include <stdlib.h>
@@ -89,11 +89,32 @@ int adt_arrSize(adt_arr* obj){
     return obj->size;
 }
 
+int adt_arrIndex(adt_arr* obj){
+    if(obj == NULL){
+        return EXIT_FAILURE;
+    }
+    
+    return obj->size -1;
+}
+
+int adt_arrChkNull(adt_arr* obj, int idx)
+{
+    if(obj == NULL || idx < -1){
+        return EXIT_FAILURE;
+    } else if(obj->capacity <= idx || idx > obj->size) {
+        return EXIT_FAILURE;
+    } else if(idx == -1) {
+        idx = obj->size -1;
+    }
+
+    return obj->data[idx] == NULL ? EXIT_FAILURE : EXIT_SUCCESS;
+}
+
 TYPE adt_arrGet(adt_arr* obj, int idx)
 {
-    if(obj == NULL){
+    if(obj == NULL || idx < -1){
         return NULL;
-    } else if(obj->capacity <= idx) {
+    } else if(obj->capacity <= idx || idx > obj->size) {
         return NULL;
     } else if(idx == -1) {
         idx = obj->size -1;
@@ -102,16 +123,8 @@ TYPE adt_arrGet(adt_arr* obj, int idx)
     return obj->data[idx];
 }
 
-TYPE adt_arrSet(adt_arr* obj,int idx, TYPE item)
+TYPE _adt_arrSave(adt_arr* obj,int idx, TYPE item)
 {
-    if(obj == NULL || idx < 0 || item == NULL){
-        return NULL;
-    } else if(obj->capacity <= idx) {
-        return NULL;
-    } else if(idx == -1) {
-        idx = obj->size -1;
-    }
-
     TYPE temp_item = malloc(sizeof(item));
     memcpy(temp_item,item,sizeof(TYPE));
     obj->size++;
@@ -119,10 +132,24 @@ TYPE adt_arrSet(adt_arr* obj,int idx, TYPE item)
     return obj->data[idx] = temp_item;
 }
 
-int adt_arrClearItem(adt_arr* obj,int idx){
-    if(obj == NULL || idx < 0){
+TYPE adt_arrSet(adt_arr* obj,int idx, TYPE item)
+{
+    if(obj == NULL || idx < -1 || item == NULL){
+        return NULL;
+    } else if(obj->capacity <= idx || idx > obj->size) {
+        return NULL;
+    } else if(idx == -1) {
+        idx = obj->size -1;
+    }
+
+    return _adt_arrSave(obj,idx,item);
+}
+
+//UNSAFE can cause array to be non contiguous.
+int _adt_arrClearItem(adt_arr* obj,int idx){
+    if(obj == NULL || idx < -1){
         return EXIT_FAILURE;
-    } else if(obj->capacity >= idx) {
+    } else if(obj->capacity <= idx || idx > obj->size) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size -1;
@@ -166,9 +193,9 @@ int adt_arrInsert(adt_arr* obj, int idx, TYPE item)
 {
     int i;
 
-    if(obj == NULL || idx < 0 || item == NULL){
+    if(obj == NULL || idx < -1 || item == NULL){
         return EXIT_FAILURE;
-    } else if(obj->capacity <= idx) {
+    } else if(obj->capacity <= idx || idx > obj->size) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size -1;
@@ -178,8 +205,20 @@ int adt_arrInsert(adt_arr* obj, int idx, TYPE item)
         obj->data[i + 1] = obj->data[i]; 
     }
 
-    adt_arrSet(obj,idx,item);
+    _adt_arrSave(obj,idx,item);
 
+    return EXIT_SUCCESS;
+}
+
+int adt_addItem(adt_arr* obj, TYPE item)
+{
+    if(obj == NULL ||  item == NULL){
+        return EXIT_FAILURE;
+    } else if(obj->capacity <= obj->size) {
+        return EXIT_FAILURE;
+    }
+
+    _adt_arrSave(obj,obj->size-1,item);
     return EXIT_SUCCESS;
 }
 
@@ -187,9 +226,9 @@ int adt_arrRemove(adt_arr* obj, int idx)
 {
     int i;
 
-    if(obj == NULL || idx < 0){
+    if(obj == NULL || idx < -1){
         return EXIT_FAILURE;
-    } else if(obj->capacity <= idx) {
+    } else if(obj->capacity <= idx || idx > obj->size) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size -1;
@@ -224,7 +263,7 @@ int main()
     int temp = *(int*)adt_arrGet(arr,0);
     printf(":::%d\n",temp);
 
-    adt_arrClearItem(arr,0);
+    // adt_arrClearItem(arr,0);
 
     item1 = 69;
     adt_arrInsert(arr,3,&item1);
