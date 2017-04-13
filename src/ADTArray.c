@@ -36,9 +36,9 @@ typedef struct
     unsigned int size;
     unsigned int capacity;
     TYPE* data;
-} adt_arr;
+} adtArr;
 
-adt_arr* adt_arrCreate(int init_capacity)
+adtArr* adtArr_Create(int init_capacity)
 {
     int i;
 
@@ -46,7 +46,7 @@ adt_arr* adt_arrCreate(int init_capacity)
         return NULL;
     }
 
-    adt_arr* obj = malloc(sizeof(adt_arr));
+    adtArr* obj = malloc(sizeof(adtArr));
     obj->data = malloc(init_capacity * sizeof(TYPE));
     obj->capacity = init_capacity;
     obj->size = 0;
@@ -59,7 +59,7 @@ adt_arr* adt_arrCreate(int init_capacity)
     return obj;
 }
 
-void _adt_arrFreeData(adt_arr* obj, unsigned int minidx,unsigned int maxidx){
+void _adtArr_FreeData(adtArr* obj, unsigned int minidx,unsigned int maxidx){
     int i;
 
     for(i = minidx; i < maxidx +1; i++){
@@ -67,13 +67,13 @@ void _adt_arrFreeData(adt_arr* obj, unsigned int minidx,unsigned int maxidx){
     }
 }
 
-int adt_arrFree(adt_arr* obj)
+int adtArr_Free(adtArr* obj)
 {
     if(obj == NULL){
         return EXIT_FAILURE;
     }
 
-    _adt_arrFreeData(obj,0,obj->capacity); 
+    _adtArr_FreeData(obj,0,obj->capacity); 
 
     free(obj->data);
     SAFE_FREE(obj);
@@ -81,7 +81,7 @@ int adt_arrFree(adt_arr* obj)
     return EXIT_SUCCESS;
 }
 
-int adt_arrSize(adt_arr* obj){
+int adtArr_Size(adtArr* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
     }
@@ -89,7 +89,7 @@ int adt_arrSize(adt_arr* obj){
     return obj->size;
 }
 
-int adt_arrIndex(adt_arr* obj){
+int adtArr_Index(adtArr* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
     }
@@ -97,9 +97,9 @@ int adt_arrIndex(adt_arr* obj){
     return obj->size -1;
 }
 
-int adt_arrChkNull(adt_arr* obj, int idx)
+int adtArr_ChkNull(adtArr* obj, int idx)
 {
-    if(obj == NULL || idx < -1){
+    if(obj == NULL){
         return EXIT_FAILURE;
     } else if(obj->capacity <= idx || idx > obj->size) {
         return EXIT_FAILURE;
@@ -110,9 +110,9 @@ int adt_arrChkNull(adt_arr* obj, int idx)
     return obj->data[idx] == NULL ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-TYPE adt_arrGet(adt_arr* obj, int idx)
+TYPE adtArr_Get(adtArr* obj, int idx)
 {
-    if(obj == NULL || idx < -1){
+    if(obj == NULL){
         return NULL;
     } else if(obj->capacity <= idx || idx > obj->size) {
         return NULL;
@@ -123,7 +123,7 @@ TYPE adt_arrGet(adt_arr* obj, int idx)
     return obj->data[idx];
 }
 
-TYPE _adt_arrSave(adt_arr* obj,int idx, TYPE item)
+TYPE _adtArr_Save(adtArr* obj,int idx, TYPE item)
 {
     TYPE temp_item = malloc(sizeof(item));
     memcpy(temp_item,item,sizeof(TYPE));
@@ -132,9 +132,9 @@ TYPE _adt_arrSave(adt_arr* obj,int idx, TYPE item)
     return obj->data[idx] = temp_item;
 }
 
-TYPE adt_arrSet(adt_arr* obj,int idx, TYPE item)
+TYPE adtArr_Set(adtArr* obj,int idx, TYPE item)
 {
-    if(obj == NULL || idx < -1 || item == NULL){
+    if(obj == NULL || item == NULL){
         return NULL;
     } else if(obj->capacity <= idx || idx > obj->size) {
         return NULL;
@@ -142,12 +142,12 @@ TYPE adt_arrSet(adt_arr* obj,int idx, TYPE item)
         idx = obj->size -1;
     }
 
-    return _adt_arrSave(obj,idx,item);
+    return _adtArr_Save(obj,idx,item);
 }
 
 //UNSAFE can cause array to be non contiguous.
-int _adt_arrClearItem(adt_arr* obj,int idx){
-    if(obj == NULL || idx < -1){
+int _adtArr_ClearItem(adtArr* obj,int idx){
+    if(obj == NULL){
         return EXIT_FAILURE;
     } else if(obj->capacity <= idx || idx > obj->size) {
         return EXIT_FAILURE;
@@ -161,7 +161,7 @@ int _adt_arrClearItem(adt_arr* obj,int idx){
     return EXIT_SUCCESS;
 }
 
-adt_arr* adt_arrResize(adt_arr* obj, int newcapacity)
+adtArr* adtArr_Resize(adtArr* obj, int newcapacity)
 {
     if(obj == NULL || newcapacity <= 0){
         return NULL;
@@ -179,7 +179,7 @@ adt_arr* adt_arrResize(adt_arr* obj, int newcapacity)
         if(obj->size > newcapacity){
             obj->size -= newcapacity; 
         }
-        _adt_arrFreeData(obj,newcapacity,obj->capacity);
+        _adtArr_FreeData(obj,newcapacity,obj->capacity);
     }
 
     free(obj->data);
@@ -189,44 +189,44 @@ adt_arr* adt_arrResize(adt_arr* obj, int newcapacity)
     return obj;
 }
 
-int adt_arrInsert(adt_arr* obj, int idx, TYPE item)
+int adtArr_Insert(adtArr* obj, int idx, TYPE item)
 {
     int i;
 
-    if(obj == NULL || idx < -1 || item == NULL){
+    if(obj == NULL || item == NULL){
         return EXIT_FAILURE;
     } else if(obj->capacity <= idx || idx > obj->size) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
-        idx = obj->size -1;
+        idx = obj->size;
     }
 
     for(i = idx; i < obj->capacity - 1;i++){
         obj->data[i + 1] = obj->data[i]; 
     }
 
-    _adt_arrSave(obj,idx,item);
+    _adtArr_Save(obj,idx,item);
 
     return EXIT_SUCCESS;
 }
 
-int adt_addItem(adt_arr* obj, TYPE item)
+int adtArr_addItem(adtArr* obj, TYPE item)
 {
-    if(obj == NULL ||  item == NULL){
+    if(obj == NULL || item == NULL){
         return EXIT_FAILURE;
     } else if(obj->capacity <= obj->size) {
         return EXIT_FAILURE;
     }
 
-    _adt_arrSave(obj,obj->size-1,item);
+    _adtArr_Save(obj,obj->size-1,item);
     return EXIT_SUCCESS;
 }
 
-int adt_arrRemove(adt_arr* obj, int idx)
+int adtArr_Remove(adtArr* obj, int idx)
 {
     int i;
 
-    if(obj == NULL || idx < -1){
+    if(obj == NULL){
         return EXIT_FAILURE;
     } else if(obj->capacity <= idx || idx > obj->size) {
         return EXIT_FAILURE;
@@ -250,29 +250,29 @@ int main()
 {
     int item1 = 39;
 
-    adt_arr* arr = adt_arrCreate(100);
+    adtArr* arr = adtArr_Create(100);
     printf("arrayCap:%d\n",arr->capacity);
 
-    adt_arrSet(arr,88,&item1);
-    adt_arrResize(arr,10);
+    adtArr_Set(arr,88,&item1);
+    adtArr_Resize(arr,10);
     printf("arrayCap:%d\n",arr->capacity);
 
     
-    adt_arrSet(arr,0,&item1);
+    adtArr_Set(arr,0,&item1);
     
-    int temp = *(int*)adt_arrGet(arr,0);
+    int temp = *(int*)adtArr_Get(arr,0);
     printf(":::%d\n",temp);
 
-    // adt_arrClearItem(arr,0);
+    // adtArrClearItem(arr,0);
 
     item1 = 69;
-    adt_arrInsert(arr,3,&item1);
-    adt_arrRemove(arr,3);
+    adtArr_Insert(arr,3,&item1);
+    adtArr_Remove(arr,3);
 
-    // temp = *(int*)adt_arrGet(arr,3);
+    // temp = *(int*)adtArr_Get(arr,3);
     // printf(":::%d\n",temp);
 
-    adt_arrFree(arr);
+    adtArr_Free(arr);
 
 
     return 0;
