@@ -24,11 +24,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SAFE_FREE(x) do { if ((x) != NULL) {free(x); x=NULL;} } while(0)
+
+typedef void* TYPE;
+
 typedef struct
 {
     unsigned int size;
     unsigned int capacity;
-    void** data;
+    TYPE* data;
 } ADTStack;
 
 ADTStack* ADTStackCreate(int capacity)
@@ -39,7 +43,7 @@ ADTStack* ADTStackCreate(int capacity)
 
     ADTStack* obj = malloc(sizeof(ADTStack));
 
-    obj->data = malloc(capacity * sizeof(void*));
+    obj->data = malloc(capacity * sizeof(TYPE));
     obj->capacity = capacity;
     obj->size = 0;
 
@@ -50,9 +54,7 @@ void _ADTStackFreeData(ADTStack* obj, unsigned int minidx,unsigned int maxidx){
     int i;
 
     for(i = minidx; i < maxidx +1; i++){
-        if(obj->data[i] != NULL){
-            free(obj->data[i]);
-        }
+        SAFE_FREE(obj->data[i]);
     }
 }
 
@@ -65,53 +67,53 @@ int ADTStackFree(ADTStack* obj)
     _ADTStackFreeData(obj,0,obj->capacity);
 
     free(obj->data);
-    free(obj);
+    SAFE_FREE(obj);
 
     return EXIT_SUCCESS;
 }
 
 int ADTStackSize(ADTStack* obj){
     if(obj == NULL){
-        return -1;
+        return EXIT_FAILURE;
     }
     
     return obj->size;
 }
 
-void* ADTStackTop(ADTStack* obj)
+TYPE ADTStackTop(ADTStack* obj)
 {
     if(obj == NULL){
+        return NULL;
+    } else if(obj->size == 0) {
         return NULL;
     }
 
     return obj->data[obj->size -1];
 }
 
-void* ADTStackPush(ADTStack* obj, void* item)
+TYPE ADTStackPush(ADTStack* obj, TYPE item)
 {
-    if(obj == NULL){
+    if(obj == NULL || item == NULL){
         return NULL;
-    }
-    else if(obj->size == obj->capacity){
+    } else if(obj->size == obj->capacity) {
         return NULL;
     }
 
-    void* TempItem = malloc(sizeof(void*));
-    memcpy(TempItem,item,sizeof(void*));
+    TYPE temp_item = malloc(sizeof(item));
+    memcpy(temp_item,item,sizeof(TYPE));
     obj->size++;
 
-    return obj->data[obj->size -1] = TempItem;
+    return obj->data[obj->size -1] = temp_item;
 }
 
 int ADTStackPop(ADTStack* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
-    } else if(obj->size <= 0) {
+    } else if(obj->size == 0) {
         return EXIT_FAILURE;
     }
     
-    free(obj->data[obj->size -1]);
-    obj->data[obj->size -1] = NULL;
+    SAFE_FREE(obj->data[obj->size -1]);
     obj->size--;
 
     return EXIT_FAILURE;
@@ -124,7 +126,7 @@ ADTStack* ADTStackResize(ADTStack* obj, int newcapacity)
     }
 
     int i;
-    void** newdata = malloc(newcapacity * sizeof(void*));
+    TYPE* newdata = malloc(newcapacity * sizeof(TYPE));
     
     for(i = 0; i < newcapacity;i++){
         //swapping pointers to items.
