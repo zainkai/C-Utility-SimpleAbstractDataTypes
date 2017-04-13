@@ -99,9 +99,9 @@ int adtArr_Index(adtArr* obj){
 
 int adtArr_ChkNull(adtArr* obj, int idx)
 {
-    if(obj == NULL){
+    if(obj == NULL || idx < -1){
         return EXIT_FAILURE;
-    } else if(obj->capacity <= idx || idx > obj->size) {
+    } else if(idx >= obj->capacity || obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size -1;
@@ -112,9 +112,9 @@ int adtArr_ChkNull(adtArr* obj, int idx)
 
 TYPE adtArr_Get(adtArr* obj, int idx)
 {
-    if(obj == NULL){
+    if(obj == NULL || idx < -1){
         return NULL;
-    } else if(obj->capacity <= idx || idx > obj->size) {
+    } else if(idx >= obj->capacity || obj->size < idx) {
         return NULL;
     } else if(idx == -1) {
         idx = obj->size -1;
@@ -134,9 +134,9 @@ TYPE _adtArr_Save(adtArr* obj,int idx, TYPE item)
 
 TYPE adtArr_Set(adtArr* obj,int idx, TYPE item)
 {
-    if(obj == NULL || item == NULL){
+    if(obj == NULL || item == NULL || idx < -1){
         return NULL;
-    } else if(obj->capacity <= idx || idx > obj->size) {
+    } else if(idx >= obj->capacity || obj->size < idx) {
         return NULL;
     } else if(idx == -1) {
         idx = obj->size -1;
@@ -147,9 +147,9 @@ TYPE adtArr_Set(adtArr* obj,int idx, TYPE item)
 
 //UNSAFE can cause array to be non contiguous.
 int _adtArr_ClearItem(adtArr* obj,int idx){
-    if(obj == NULL){
+    if(obj == NULL || idx < -1){
         return EXIT_FAILURE;
-    } else if(obj->capacity <= idx || idx > obj->size) {
+    } else if(idx >= obj->capacity || obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size -1;
@@ -193,9 +193,9 @@ int adtArr_Insert(adtArr* obj, int idx, TYPE item)
 {
     int i;
 
-    if(obj == NULL || item == NULL){
+    if(obj == NULL || item == NULL || idx < -1){
         return EXIT_FAILURE;
-    } else if(obj->capacity <= idx || idx > obj->size) {
+    } else if(idx >= obj->capacity || obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size;
@@ -226,9 +226,9 @@ int adtArr_Remove(adtArr* obj, int idx)
 {
     int i;
 
-    if(obj == NULL){
+    if(obj == NULL || idx < -1){
         return EXIT_FAILURE;
-    } else if(obj->capacity <= idx || idx > obj->size) {
+    } else if(idx >= obj->capacity || obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size -1;
