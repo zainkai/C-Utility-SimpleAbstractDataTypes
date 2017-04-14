@@ -74,7 +74,7 @@ MU_TEST(push_TESTS){
 
 	num = 21;
 	mu_assert(EXIT_SUCCESS == adtstk_push(IntSuite,&num),"5) adtstk_push returns 0 or EXIT_SUCCESS");
-	mu_assert(21 == *(int*)IntSuite->data[0],"6) adtstk_push put 21 on stack");
+	mu_assert(21 == *(int*)adtstk_top(IntSuite),"6) adtstk_push put 21 on stack");
 }
 
 MU_TEST(pop_TESTS){
@@ -95,14 +95,14 @@ MU_TEST(pop_TESTS){
 
 MU_TEST(resize_TESTS){
 	int i;
-	adtstk* arr = adtstk_create(5);
 
 	mu_assert(EXIT_FAILURE == adtstk_resize(NULL,11),"1) adtstk_resize returns -1 or EXIT_FAILURE");
 
-	mu_assert(EXIT_FAILURE == adtstk_resize(arr,0),"2) adtstk_resize returns -1 or EXIT_FAILURE");
+	mu_assert(EXIT_FAILURE == adtstk_resize(IntSuite,0),"2) adtstk_resize returns -1 or EXIT_FAILURE");
 
-	//works outside of minunit. otherwise malloc errors.
-	//mu_assert(EXIT_SUCCESS == adtstk_resize(arr,20),"3) adtstk_resize returns 0 or EXIT_SUCCESS");
+	mu_assert(EXIT_SUCCESS == adtstk_resize(IntSuite,20),"3) adtstk_resize returns 0 or EXIT_SUCCESS");
+
+	mu_assert(EXIT_SUCCESS == adtstk_resize(IntSuite,5),"4) adtstk_resize returns 0 or EXIT_SUCCESS");
 }
 
 MU_TEST_SUITE(test_suite) {
