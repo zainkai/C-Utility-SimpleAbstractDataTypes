@@ -24,8 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 0
-
 #define SAFE_FREE(x) do { if ((x) != NULL) {free(x); x=NULL;} } while(0)
 
 typedef void* TYPE;
@@ -147,13 +145,13 @@ int adtstk_resize(adtstk* obj, int newcapacity)
     int i;
     if(obj == NULL || newcapacity <= 0){
         return EXIT_FAILURE;
-    } else if(newcapacity < obj->capacity) {
+    } else if(newcapacity <= obj->capacity) {
         obj->size = newcapacity; 
     }
 
     TYPE* newdata = _adtstk_init_data(newcapacity);
+    //copying data array
     for(i = 0; i < obj->size;i++){
-        //swapping pointers to items.
         TYPE temp_item = malloc(sizeof(TYPE));
         memcpy(temp_item,obj->data[i],sizeof(TYPE));
         newdata[i] = temp_item;
@@ -167,35 +165,3 @@ int adtstk_resize(adtstk* obj, int newcapacity)
 
     return EXIT_SUCCESS;
 }
-
-#if DEBUG
-int main()
-{
-    int i;
-
-    adtstk* arr = adtstk_create(100);
-    printf("init cap::%d\n",arr->capacity);
-
-    for(i =0;i< 100;i++){
-        adtstk_push(arr,&i);
-    }
-
-    //adtstk_resize(arr,10);
-    printf("resize cap::%d\n",arr->capacity);
-    
-    
-    //int 
-    int temp = *(int*)arr->data[9]; 
-    //temp = *(int*)adtstk_top(arr); 
-
-    printf("SIZE:::%d\n",adtstk_size(arr));  
-
-    adtstk_pop(arr);
-    printf(":::%d\n",temp);
-    adtstk_pop(arr);
-
-    adtstk_free(arr);
-
-    return 0;
-}
-#endif
