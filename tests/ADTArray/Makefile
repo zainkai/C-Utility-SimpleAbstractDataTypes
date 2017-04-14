@@ -1,5 +1,5 @@
-ADT := ADTStack
-FLAGS := -lrt -lm -g
+ADT := ADTArray
+FLAGS := -lrt -lm
 
 all: ADTTest
 

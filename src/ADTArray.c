@@ -108,7 +108,7 @@ int adtarr_chknull(adtarr* obj, int idx)
     } else if(idx >= obj->capacity || obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
-        idx = obj->size -1;
+        idx = obj->size == 0 ? 0 : obj->size -1;
     }
 
     return obj->data[idx] == NULL ? EXIT_FAILURE : EXIT_SUCCESS;
@@ -121,7 +121,7 @@ TYPE adtarr_get(adtarr* obj, int idx)
     } else if(idx >= obj->capacity || obj->size < idx) {
         return NULL;
     } else if(idx == -1) {
-        idx = obj->size -1;
+        idx = obj->size == 0 ? 0 : obj->size -1;
     }
 
     return obj->data[idx];
@@ -136,7 +136,6 @@ TYPE _adtarr_save(adtarr* obj,int idx, TYPE item)
     return obj->data[idx] = temp_item;
 }
 
-//UNSAFE can cause array to be non contiguous.
 //frees and writes over already allocated memory.
 TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
 {
@@ -145,7 +144,7 @@ TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
     } else if(idx >= obj->capacity || obj->size < idx) {
         return NULL;
     } else if(idx == -1) {
-        idx = obj->size -1;
+        idx = obj->size == 0 ? 0 : obj->size;
     }
 
     if(obj->data[idx] != NULL){
@@ -162,7 +161,7 @@ int _adtarr_clearitem(adtarr* obj,int idx){
     } else if(idx >= obj->capacity || obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
-        idx = obj->size -1;
+        idx = obj->size == 0 ? 0 : obj->size -1;
     }
 
     SAFE_FREE(obj->data[idx]);
@@ -191,7 +190,7 @@ int adtarr_resize(adtarr* obj, int newcapacity)
     }
 
     _adtarr_freedata(obj,0,obj->capacity);
-    free(obj->data);
+    SAFE_FREE(obj->data);
     obj->data = newdata;
     obj->capacity = newcapacity;
 
@@ -207,7 +206,7 @@ int adtarr_insert(adtarr* obj, int idx, TYPE item)
     } else if(idx >= obj->capacity || obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
-        idx = obj->size;
+        idx = obj->size == 0 ? 0 : obj->size;
     }
 
     for(i = idx; i < obj->capacity - 1;i++){
@@ -233,7 +232,7 @@ int adtarr_remove(adtarr* obj, int idx)
     } else if(idx == -1 && obj->data[idx] == NULL) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
-        idx = obj->size -1;
+        idx = obj->size == 0 ? 0 : obj->size -1;
     }
 
     SAFE_FREE(obj->data[idx]);
