@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DEBUG 0
+
 #define SAFE_FREE(x) do { if ((x) != NULL) {free(x); x=NULL;} } while(0)
 
 typedef void* TYPE;
@@ -33,9 +35,9 @@ typedef struct
     unsigned int size;
     unsigned int capacity;
     TYPE* data;
-} adtArr;
+} adtarr;
 
-adtArr* adtArr_Create(int init_capacity)
+adtarr* adtarr_create(int init_capacity)
 {
     int i;
 
@@ -43,7 +45,7 @@ adtArr* adtArr_Create(int init_capacity)
         return NULL;
     }
 
-    adtArr* obj = malloc(sizeof(adtArr));
+    adtarr* obj = malloc(sizeof(adtarr));
     obj->data = malloc(init_capacity * sizeof(TYPE));
     obj->capacity = init_capacity;
     obj->size = 0;
@@ -56,7 +58,7 @@ adtArr* adtArr_Create(int init_capacity)
     return obj;
 }
 
-void _adtArr_FreeData(adtArr* obj, unsigned int minidx,unsigned int maxidx){
+void _adtarr_freedata(adtarr* obj, unsigned int minidx,unsigned int maxidx){
     int i;
 
     for(i = minidx; i < maxidx +1; i++){
@@ -64,13 +66,13 @@ void _adtArr_FreeData(adtArr* obj, unsigned int minidx,unsigned int maxidx){
     }
 }
 
-int adtArr_Free(adtArr* obj)
+int adtarr_free(adtarr* obj)
 {
     if(obj == NULL){
         return EXIT_FAILURE;
     }
 
-    _adtArr_FreeData(obj,0,obj->capacity); 
+    _adtarr_freedata(obj,0,obj->capacity); 
 
     free(obj->data);
     SAFE_FREE(obj);
@@ -78,7 +80,7 @@ int adtArr_Free(adtArr* obj)
     return EXIT_SUCCESS;
 }
 
-int adtArr_Size(adtArr* obj){
+int adtarr_size(adtarr* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
     }
@@ -86,7 +88,7 @@ int adtArr_Size(adtArr* obj){
     return obj->size;
 }
 
-int adtArr_Index(adtArr* obj){
+int adtarr_index(adtarr* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
     }
@@ -94,7 +96,7 @@ int adtArr_Index(adtArr* obj){
     return obj->size -1;
 }
 
-int adtArr_ChkNull(adtArr* obj, int idx)
+int adtarr_chknull(adtarr* obj, int idx)
 {
     if(obj == NULL || idx < -1){
         return EXIT_FAILURE;
@@ -107,7 +109,7 @@ int adtArr_ChkNull(adtArr* obj, int idx)
     return obj->data[idx] == NULL ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-TYPE adtArr_Get(adtArr* obj, int idx)
+TYPE adtarr_get(adtarr* obj, int idx)
 {
     if(obj == NULL || idx < -1){
         return NULL;
@@ -120,7 +122,7 @@ TYPE adtArr_Get(adtArr* obj, int idx)
     return obj->data[idx];
 }
 
-TYPE _adtArr_Save(adtArr* obj,int idx, TYPE item)
+TYPE _adtarr_save(adtarr* obj,int idx, TYPE item)
 {
     TYPE temp_item = malloc(sizeof(item));
     memcpy(temp_item,item,sizeof(TYPE));
@@ -129,7 +131,7 @@ TYPE _adtArr_Save(adtArr* obj,int idx, TYPE item)
     return obj->data[idx] = temp_item;
 }
 
-TYPE adtArr_Set(adtArr* obj,int idx, TYPE item)
+TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
 {
     if(obj == NULL || item == NULL || idx < -1){
         return NULL;
@@ -139,11 +141,11 @@ TYPE adtArr_Set(adtArr* obj,int idx, TYPE item)
         idx = obj->size -1;
     }
 
-    return _adtArr_Save(obj,idx,item);
+    return _adtarr_save(obj,idx,item);
 }
 
 //UNSAFE can cause array to be non contiguous.
-int _adtArr_ClearItem(adtArr* obj,int idx){
+int _adtarr_clearitem(adtarr* obj,int idx){
     if(obj == NULL || idx < -1){
         return EXIT_FAILURE;
     } else if(idx >= obj->capacity || obj->size < idx) {
@@ -158,7 +160,7 @@ int _adtArr_ClearItem(adtArr* obj,int idx){
     return EXIT_SUCCESS;
 }
 
-adtArr* adtArr_Resize(adtArr* obj, int newcapacity)
+adtarr* adtarr_resize(adtarr* obj, int newcapacity)
 {
     if(obj == NULL || newcapacity <= 0){
         return NULL;
@@ -167,6 +169,7 @@ adtArr* adtArr_Resize(adtArr* obj, int newcapacity)
     int i;
     TYPE* Newdata = malloc(newcapacity * sizeof(TYPE));
     
+
     for(i = 0; i < newcapacity;i++){
         //swapping pointers to items.
         Newdata[i] = obj->data[i];
@@ -174,9 +177,9 @@ adtArr* adtArr_Resize(adtArr* obj, int newcapacity)
 
     if((newcapacity - obj->capacity) > 0){
         if(obj->size > newcapacity){
-            obj->size -= newcapacity; 
+            obj->size = newcapacity; 
         }
-        _adtArr_FreeData(obj,newcapacity,obj->capacity);
+        _adtarr_freedata(obj,newcapacity,obj->capacity);
     }
 
     free(obj->data);
@@ -186,7 +189,7 @@ adtArr* adtArr_Resize(adtArr* obj, int newcapacity)
     return obj;
 }
 
-int adtArr_Insert(adtArr* obj, int idx, TYPE item)
+int adtarr_insert(adtarr* obj, int idx, TYPE item)
 {
     int i;
 
@@ -202,12 +205,12 @@ int adtArr_Insert(adtArr* obj, int idx, TYPE item)
         obj->data[i + 1] = obj->data[i]; 
     }
 
-    _adtArr_Save(obj,idx,item);
+    _adtarr_save(obj,idx,item);
 
     return EXIT_SUCCESS;
 }
 
-int adtArr_addItem(adtArr* obj, TYPE item)
+int adtarr_additem(adtarr* obj, TYPE item)
 {
     if(obj == NULL || item == NULL){
         return EXIT_FAILURE;
@@ -215,11 +218,11 @@ int adtArr_addItem(adtArr* obj, TYPE item)
         return EXIT_FAILURE;
     }
 
-    _adtArr_Save(obj,obj->size-1,item);
+    _adtarr_save(obj,obj->size-1,item);
     return EXIT_SUCCESS;
 }
 
-int adtArr_Remove(adtArr* obj, int idx)
+int adtarr_remove(adtarr* obj, int idx)
 {
     int i;
 
@@ -242,35 +245,38 @@ int adtArr_Remove(adtArr* obj, int idx)
     return EXIT_SUCCESS;
 }
 
+#if DEBUG
 
 int main()
 {
     int item1 = 39;
 
-    adtArr* arr = adtArr_Create(100);
+    adtarr* arr = adtarr_create(100);
     printf("arrayCap:%d\n",arr->capacity);
 
-    adtArr_Set(arr,88,&item1);
-    adtArr_Resize(arr,10);
+    adtarr_set(arr,88,&item1);
+    adtarr_resize(arr,10);
     printf("arrayCap:%d\n",arr->capacity);
 
     
-    adtArr_Set(arr,0,&item1);
+    adtarr_set(arr,0,&item1);
     
-    int temp = *(int*)adtArr_Get(arr,0);
+    int temp = *(int*)adtarr_get(arr,0);
     printf(":::%d\n",temp);
 
-    // adtArrClearItem(arr,0);
+    // adtarrClearItem(arr,0);
 
     item1 = 69;
-    adtArr_Insert(arr,3,&item1);
-    adtArr_Remove(arr,3);
+    adtarr_insert(arr,3,&item1);
+    adtarr_remove(arr,3);
 
-    // temp = *(int*)adtArr_Get(arr,3);
+    // temp = *(int*)adtarr_get(arr,3);
     // printf(":::%d\n",temp);
 
-    adtArr_Free(arr);
+    adtarr_free(arr);
 
 
     return 0;
 }
+
+#endif

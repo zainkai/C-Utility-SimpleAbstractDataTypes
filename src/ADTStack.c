@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DEBUG 0
+
 #define SAFE_FREE(x) do { if ((x) != NULL) {free(x); x=NULL;} } while(0)
 
 typedef void* TYPE;
@@ -33,9 +35,9 @@ typedef struct
     unsigned int size;
     unsigned int capacity;
     TYPE* data;
-} adtStk;
+} adtstk;
 
-adtStk* adtStk_Create(int init_capacity)
+adtstk* adtstk_create(int init_capacity)
 {
     int i;
     
@@ -43,7 +45,7 @@ adtStk* adtStk_Create(int init_capacity)
         return NULL;
     }
 
-    adtStk* obj = malloc(sizeof(adtStk));
+    adtstk* obj = malloc(sizeof(adtstk));
 
     obj->data = malloc(init_capacity * sizeof(TYPE));
     obj->capacity = init_capacity;
@@ -57,7 +59,7 @@ adtStk* adtStk_Create(int init_capacity)
     return obj;
 }
 
-void _adtStk_FreeData(adtStk* obj, unsigned int minidx,unsigned int maxidx){
+void _adtstk_freedata(adtstk* obj, unsigned int minidx,unsigned int maxidx){
     int i;
 
     for(i = minidx; i < maxidx +1; i++){
@@ -65,21 +67,21 @@ void _adtStk_FreeData(adtStk* obj, unsigned int minidx,unsigned int maxidx){
     }
 }
 
-int adtStk_Free(adtStk* obj)
+int adtstk_free(adtstk* obj)
 {
     if(obj == NULL){
         return EXIT_FAILURE;
     }  
 
-    _adtStk_FreeData(obj,0,obj->capacity);
+    _adtstk_freedata(obj,0,obj->capacity);
 
-    free(obj->data);
+    SAFE_FREE(obj->data);
     SAFE_FREE(obj);
 
     return EXIT_SUCCESS;
 }
 
-int adtStk_Size(adtStk* obj){
+int adtstk_size(adtstk* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
     }
@@ -87,7 +89,7 @@ int adtStk_Size(adtStk* obj){
     return obj->size;
 }
 
-TYPE adtStk_Top(adtStk* obj)
+TYPE adtstk_top(adtstk* obj)
 {
     if(obj == NULL){
         return NULL;
@@ -98,7 +100,7 @@ TYPE adtStk_Top(adtStk* obj)
     return obj->data[obj->size -1];
 }
 
-int adtStk_Push(adtStk* obj, TYPE item)
+int adtstk_push(adtstk* obj, TYPE item)
 {
     if(obj == NULL || item == NULL){
         return EXIT_FAILURE;
@@ -114,7 +116,7 @@ int adtStk_Push(adtStk* obj, TYPE item)
     return EXIT_SUCCESS;
 }
 
-int adtStk_Pop(adtStk* obj){
+int adtstk_pop(adtstk* obj){
     if(obj == NULL){
         return EXIT_FAILURE;
     } else if(obj->size == 0) {
@@ -124,18 +126,18 @@ int adtStk_Pop(adtStk* obj){
     SAFE_FREE(obj->data[obj->size -1]);
     obj->size--;
 
-    return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 
-adtStk* adtStk_Resize(adtStk* obj, int newcapacity)
+int adtstk_resize(adtstk* obj, int newcapacity)
 {
     if(obj == NULL || newcapacity <= 0){
-        return NULL;
+        return EXIT_FAILURE;
     }
 
     int i;
     TYPE* newdata = malloc(newcapacity * sizeof(TYPE));
-    
+
     for(i = 0; i < newcapacity;i++){
         //swapping pointers to items.
         newdata[i] = obj->data[i];
@@ -143,42 +145,48 @@ adtStk* adtStk_Resize(adtStk* obj, int newcapacity)
 
     if((newcapacity - obj->capacity) > 0){
         if(obj->size > newcapacity){
-            obj->size -= newcapacity; 
+            obj->size = newcapacity; 
         }
-        _adtStk_FreeData(obj,newcapacity,obj->capacity);
+        _adtstk_freedata(obj,newcapacity,obj->capacity);
     }
 
     free(obj->data);
     obj->data = newdata;
     obj->capacity = newcapacity;
 
-    return obj;
+    return EXIT_SUCCESS;
 }
+
+#if DEBUG
 
 int main()
 {
     int i;
 
-    adtStk* arr = adtStk_Create(100);
-    
+    adtstk* arr = adtstk_create(100);
+    printf("init cap::%d\n",arr->capacity);
 
     for(i =0;i< 100;i++){
-        adtStk_Push(arr,&i);
+        adtstk_push(arr,&i);
     }
 
-    adtStk_Resize(arr,10);
+    adtstk_resize(arr,10);
+    printf("resize cap::%d\n",arr->capacity);
+    
     
     //int 
     int temp = *(int*)arr->data[9]; 
-    //temp = *(int*)adtStk_Top(arr); 
+    //temp = *(int*)adtstk_top(arr); 
 
-    printf("SIZE:::%d\n",adtStk_Size(arr));  
+    printf("SIZE:::%d\n",adtstk_size(arr));  
 
-    adtStk_Pop(arr);
+    adtstk_pop(arr);
     printf(":::%d\n",temp);
-    adtStk_Pop(arr);
+    adtstk_pop(arr);
 
-    adtStk_Free(arr);
+    adtstk_free(arr);
 
     return 0;
 }
+
+#endif
