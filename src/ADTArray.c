@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define SAFE_FREE(x) do { if ((x) != NULL) {free(x); x=NULL;} } while(0)
 
@@ -101,26 +101,6 @@ int adtarr_capacity(adtarr* obj){
     return obj->capacity;
 }
 
-TYPE adtarr_top_idx(adtarr* obj)
-{
-    if(obj == NULL) {
-        return NULL;
-    } else if(obj->size == 0) {
-        return NULL;
-    }
-
-    return obj->data[obj->size -1];
-}
-
-int adtarr_top(adtarr* obj)
-{
-    if(obj == NULL){
-        return EXIT_FAILURE;
-    }
-
-    return obj->size -1;
-}
-
 int adtarr_chknull(adtarr* obj, int idx)
 {
     if(obj == NULL || idx < -1){
@@ -156,6 +136,8 @@ TYPE _adtarr_save(adtarr* obj,int idx, TYPE item)
     return obj->data[idx] = temp_item;
 }
 
+//UNSAFE can cause array to be non contiguous.
+//frees and writes over already allocated memory.
 TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
 {
     if(obj == NULL || item == NULL || idx < -1){
@@ -164,6 +146,10 @@ TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
         return NULL;
     } else if(idx == -1) {
         idx = obj->size -1;
+    }
+
+    if(obj->data[idx] != NULL){
+        SAFE_FREE(obj->data[idx]);
     }
 
     return _adtarr_save(obj,idx,item);
@@ -233,18 +219,6 @@ int adtarr_insert(adtarr* obj, int idx, TYPE item)
 
     _adtarr_save(obj,idx,item);
 
-    return EXIT_SUCCESS;
-}
-
-int adtarr_additem(adtarr* obj, TYPE item)
-{
-    if(obj == NULL || item == NULL){
-        return EXIT_FAILURE;
-    } else if(obj->capacity <= obj->size) {
-        return EXIT_FAILURE;
-    }
-
-    _adtarr_save(obj,obj->size,item);
     return EXIT_SUCCESS;
 }
 
