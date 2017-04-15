@@ -40,20 +40,82 @@ MU_TEST(size_TESTS){
 }
 
 MU_TEST(insert_TESTS){
-	//mu_check(adtarr_insert(IntSuite));
+	int num = 1111;
+
+	mu_check(EXIT_FAILURE == adtarr_insert(IntSuite,-1,&num));
+	mu_check(EXIT_FAILURE == adtarr_insert(NULL,-1,&num));
+	mu_check(EXIT_FAILURE == adtarr_insert(NULL,-2,&num));
+
+	num = 1212;
+	adtarr_remove(IntSuite,-1);
+	mu_check(EXIT_SUCCESS == adtarr_insert(IntSuite,2,&num));
+	mu_check(1212 == *(int*)adtarr_get(IntSuite,2));
+
+	num = 2222;
+	adtarr_remove(IntSuite,2);
+	mu_check(EXIT_SUCCESS == adtarr_insert(IntSuite,-1,&num));
+	mu_check(2222 == *(int*)adtarr_get(IntSuite,-1));
+
+	num = 3333;
+	adtarr_remove(IntSuite,0);
+	mu_check(EXIT_SUCCESS == adtarr_insert(IntSuite,0,&num));
+	mu_check(3333 == *(int*)adtarr_get(IntSuite,0));
 }
 
 MU_TEST(resize_TESTS){
-	mu_assert(EXIT_FAILURE == adtarr_resize(NULL,11),"1) adtarr_resize returns -1 or EXIT_FAILURE");
+	mu_check(EXIT_FAILURE == adtarr_resize(NULL,11));
 
-	mu_assert(EXIT_FAILURE == adtarr_resize(IntSuite,0),"2) adtarr_resize returns -1 or EXIT_FAILURE");
+	mu_check(EXIT_FAILURE == adtarr_resize(IntSuite,0));
 
-	mu_assert(EXIT_SUCCESS == adtarr_resize(IntSuite,20),"3) adtarr_resize returns 0 or EXIT_SUCCESS");
+	mu_check(EXIT_SUCCESS == adtarr_resize(IntSuite,20));
 
 	mu_check(20 == adtarr_capacity(IntSuite));
 
 	mu_check(EXIT_SUCCESS == adtarr_resize(IntSuite,5));
 	mu_check(4 == *(int*)adtarr_get(IntSuite,-1));
+}
+
+MU_TEST(remove_TESTS){
+	mu_check(EXIT_FAILURE == adtarr_remove(NULL,11));
+
+	mu_check(EXIT_FAILURE == adtarr_remove(IntSuite, 11));
+
+	mu_check(EXIT_SUCCESS == adtarr_remove(IntSuite,-1));
+	mu_check(8 == *(int*)adtarr_get(IntSuite,-1));
+
+	mu_check(EXIT_SUCCESS == adtarr_remove(IntSuite,3));
+	mu_check(4 == *(int*)adtarr_get(IntSuite,3));
+
+	mu_check(EXIT_SUCCESS == adtarr_remove(IntSuite,0));
+	mu_check(1 == *(int*)adtarr_get(IntSuite,0));
+
+	mu_check(EXIT_SUCCESS == adtarr_remove(IntSuite,7));
+	mu_check(7 == *(int*)adtarr_get(IntSuite,-1));
+}
+
+MU_TEST(set_TESTS){
+	int num = 1111;
+
+	mu_check(NULL == adtarr_set(IntSuite,-1,NULL));
+	mu_check(NULL == adtarr_set(NULL,-1,&num));
+	mu_check(NULL == adtarr_set(NULL,-2,&num));
+
+	num = 1111;
+	mu_check(1111 == *(int*)adtarr_set(IntSuite,2,&num));
+
+	num == 999;
+	mu_check(999 == *(int*)adtarr_set(IntSuite,-1,&num));
+	mu_check(999 == *(int*)adtarr_get(IntSuite,-1));
+
+	// num = 2222;
+	// adtarr_remove(IntSuite,2);
+	// mu_check(EXIT_SUCCESS == adtarr_insert(IntSuite,-1,&num));
+	// mu_check(2222 == *(int*)adtarr_get(IntSuite,-1));
+
+	// num = 3333;
+	// adtarr_remove(IntSuite,0);
+	// mu_check(EXIT_SUCCESS == adtarr_insert(IntSuite,0,&num));
+	// mu_check(3333 == *(int*)adtarr_get(IntSuite,0));
 }
 
 MU_TEST_SUITE(test_suite) {
@@ -62,9 +124,17 @@ MU_TEST_SUITE(test_suite) {
 	//adtarr_size
 	MU_RUN_TEST(size_TESTS);
 
-
 	//adtarr_resize
 	MU_RUN_TEST(resize_TESTS);
+
+	//adtarr_insert
+	MU_RUN_TEST(insert_TESTS);
+
+	//adtarr_remove
+	MU_RUN_TEST(remove_TESTS);
+
+	//adtarr_set
+	MU_RUN_TEST(set_TESTS);
 }
 
 int main(int argc, char *argv[]) {

@@ -191,7 +191,7 @@ int adtarr_resize(adtarr* obj, int newcapacity)
 
     _adtarr_freedata(obj,0,obj->capacity);
     SAFE_FREE(obj->data);
-    
+
     obj->data = newdata;
     obj->capacity = newcapacity;
 
@@ -204,20 +204,18 @@ int adtarr_insert(adtarr* obj, int idx, TYPE item)
 
     if(obj == NULL || item == NULL || idx < -1){
         return EXIT_FAILURE;
-    } else if(idx >= obj->capacity || obj->size < idx) {
+    } else if(idx >= obj->capacity || obj->size < idx || obj->size == obj->capacity) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size == 0 ? 0 : obj->size;
     }
 
-    for(i = idx; i < obj->capacity - 1;i++){
-        //obj->data[i + 1] = obj->data[i];
-        if(obj->data[i] != NULL){
-            memcpy(&obj->data[i +1],&obj->data[i],sizeof(TYPE)); 
-        }
+    
+    for(i = obj->size + 1; idx > i; i--){ 
+        memmove(&obj->data[i],&obj->data[i-1],sizeof(TYPE));
     }
-
-    _adtarr_save(obj,idx,item);
+    
+    adtarr_set(obj,idx,item);
 
     return EXIT_SUCCESS;
 }
@@ -237,9 +235,12 @@ int adtarr_remove(adtarr* obj, int idx)
     SAFE_FREE(obj->data[idx]);
     obj->size--;
 
-    for(i = idx; i < obj->capacity -1; i++){ 
-        memmove(&obj->data[i],&obj->data[i+1],sizeof(void*));
+    for(i = idx; i < obj->size -1; i++){ 
+        memmove(&obj->data[i],&obj->data[i+1],sizeof(TYPE));
     }
+    obj->data[i] = NULL;
+    
+
     return EXIT_SUCCESS;
 }
 
