@@ -55,11 +55,13 @@
       for(item = *(type*)obj->data[count]; keep; keep = !keep)
 
 
-typedef void* TYPE;
+#define WARNINGSUPPRESS(T) -Wimplicit-##T\
 
 #define mstk_lib(T)\
     mstk_DEF(T)\
     mstk_create_DEF(T) \
+    _mstk_freedata_DEF(T)\
+    adtstk_free(T)\
 
 
 #define mstk(T) mstk##T
@@ -71,9 +73,10 @@ typedef struct mstk(T) \
     T* data; \
 } mstk(T);
 
-#define mstk_create(T,init_capacity) mstk_create##T
+///#pragma GCC diagnostic ignored WARNINGSUPPRESS(T)
+#define mstk_create(T) mstk_create##T
 #define mstk_create_DEF(T) \
-mstk(T)* mstk_create(T)(T,init_capacity)\
+mstk(T)* mstk_create(T)(init_capacity)\
 {\
     if(init_capacity == 0){\
         return NULL;\
@@ -88,26 +91,30 @@ mstk(T)* mstk_create(T)(T,init_capacity)\
     return obj;\
 }
 
-// void _adtstk_freedata(adtstk* obj, unsigned int minidx,unsigned int maxidx){
-//     int i;
+#define _mstk_freedata(T) _mstk_freedata##T
+#define _mstk_freedata_DEF(T) \
+void _mstk_freedata(T)(mstk(T)* obj, unsigned int minidx, unsigned int maxidx){\
+    int i;\
+    \
+    for(i = minidx; i < maxidx; i++){\
+        SAFE_FREE(obj->data[i]);\
+    }\
+}
 
-//     for(i = minidx; i < maxidx; i++){
-//         SAFE_FREE(obj->data[i]);
-//     }
-// }
-
-// int adtstk_free(adtstk* obj)
-// {
-//     if(obj == NULL){
-//         return EXIT_FAILURE;
-//     }  
-
-//     _adtstk_freedata(obj,0,obj->capacity);
-//     SAFE_FREE((obj->data));
-//     SAFE_FREE(obj);
-
-//     return EXIT_SUCCESS;
-// }
+#define adtstk_free(T) adtstk_free##T
+#define adtstk_free_DEF(T) \
+int adtstk_free(int)(mstk(T)* obj)\
+{\
+    if(obj == NULL){\
+        return EXIT_FAILURE;\
+    }\
+    \
+    _adtstk_freedata(T)(obj,0,obj->capacity);\
+    SAFE_FREE((obj->data));\
+    SAFE_FREE(obj);\
+    \
+    return EXIT_SUCCESS;\
+}
 
 // int adtstk_size(adtstk* obj){
 //     if(obj == NULL){
@@ -195,8 +202,10 @@ mstk(T)* mstk_create(T)(T,init_capacity)\
 mstk_lib(int);
 
 int main(void){
+    
+    //mstk_create is a function pointer
+    mstk(int)* intarray = mstk_create(int)(10);
 
-    mstk(int)* intarray = mstk_create(int,10);
 
     return 0;
 }
