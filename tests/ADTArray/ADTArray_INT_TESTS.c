@@ -126,6 +126,11 @@ MU_TEST(set_TESTS){
 	mu_check(NULL == adtarr_set(IntSuite,2,&num));
 	mu_check(231231 == *(int*)adtarr_set(IntSuite,-1,&num));
 	mu_check(231231 == *(int*)adtarr_get(IntSuite,0));
+
+	num = 44444;
+	mu_check(NULL == adtarr_set(IntSuite,2,&num));
+	mu_check(NULL == adtarr_set(IntSuite,2,&num));
+	mu_check(NULL == adtarr_get(IntSuite,1));
 }
 
 MU_TEST_SUITE(test_suite) {
@@ -145,6 +150,8 @@ MU_TEST_SUITE(test_suite) {
 
 	//adtarr_set
 	MU_RUN_TEST(set_TESTS);
+
+	//
 }
 
 int main(int argc, char *argv[]) {

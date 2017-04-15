@@ -147,11 +147,12 @@ TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
         idx = (obj->size == 0 ? 0 : obj->size -1);
     }
 
-    if(obj->data[idx] != NULL || obj->capacity == obj->size){
+    if(obj->data[idx] != NULL || obj->capacity == obj->size -1){
         SAFE_FREE(obj->data[idx]);
         obj->size--;
     }
     
+
     return _adtarr_save(obj,idx,item);
 }
 
