@@ -32,8 +32,8 @@ typedef void* TYPE;
 
 typedef struct
 {
-    unsigned int size;
-    unsigned int capacity;
+    int size;
+    int capacity;
     TYPE* data;
 } adtarr;
 
@@ -144,7 +144,7 @@ TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
     } else if(idx >= obj->capacity || obj->size < idx) {
         return NULL;
     } else if(idx == -1) {
-        idx = obj->size == 0 ? 0 : obj->size;
+        idx = (obj->size == 0 ? 0 : obj->size);
     }
 
     if(obj->data[idx] != NULL){
@@ -161,7 +161,7 @@ int _adtarr_clearitem(adtarr* obj,int idx){
     } else if(idx >= obj->capacity || obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
-        idx = obj->size == 0 ? 0 : obj->size -1;
+        idx = (obj->size == 0 ? 0 : obj->size -1);
     }
 
     SAFE_FREE(obj->data[idx]);
@@ -181,7 +181,7 @@ int adtarr_resize(adtarr* obj, int newcapacity)
 
     TYPE* newdata = _adtarr_init_data(newcapacity);
     //copying data array
-    for(i = 0; i < obj->capacity;i++){
+    for(i = 0; i < obj->size;i++){
         if(obj->data[i] != NULL){
             TYPE temp_item = malloc(sizeof(TYPE));
             memcpy(temp_item,obj->data[i],sizeof(TYPE));
@@ -191,6 +191,7 @@ int adtarr_resize(adtarr* obj, int newcapacity)
 
     _adtarr_freedata(obj,0,obj->capacity);
     SAFE_FREE(obj->data);
+    
     obj->data = newdata;
     obj->capacity = newcapacity;
 
@@ -227,9 +228,7 @@ int adtarr_remove(adtarr* obj, int idx)
 
     if(obj == NULL || idx < -1){
         return EXIT_FAILURE;
-    } else if(idx >= obj->capacity || obj->size < idx) {
-        return EXIT_FAILURE;
-    } else if(idx == -1 && obj->data[idx] == NULL) {
+    } else if(idx >= obj->capacity || obj->size < idx || obj->size == 0) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size == 0 ? 0 : obj->size -1;
@@ -238,14 +237,9 @@ int adtarr_remove(adtarr* obj, int idx)
     SAFE_FREE(obj->data[idx]);
     obj->size--;
 
-    if(obj->size != idx){
-        for(i = idx; i < obj->capacity -1; i++){
-            if(obj->data[i] != NULL){
-                memcpy(&obj->data[i],&obj->data[i+1],sizeof(TYPE));
-            }
-        }
+    for(i = idx; i < obj->capacity -1; i++){ 
+        memmove(&obj->data[i],&obj->data[i+1],sizeof(void*));
     }
-
     return EXIT_SUCCESS;
 }
 

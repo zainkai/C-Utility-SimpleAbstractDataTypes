@@ -1,5 +1,5 @@
 ADT := ADTArray
-FLAGS := -lrt -lm
+FLAGS := -lrt -lm -g
 
 all: ADTTest
 

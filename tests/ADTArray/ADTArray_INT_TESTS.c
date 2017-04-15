@@ -25,31 +25,35 @@ void teardown_int_Test(){
 MU_TEST(size_TESTS){
 	int i;
 
-	mu_assert(EXIT_FAILURE == adtarr_size(NULL),"1) adtarr_size == -1 or EXIT_FAILURE");
+	mu_check(EXIT_FAILURE == adtarr_size(NULL));
 
-	mu_assert(10 == adtarr_size(IntSuite),"2) adtarr_size == 10");
+	mu_check(10 == adtarr_size(IntSuite));
 
-	// adtarr_remove(IntSuite,9);
-	// mu_assert(9 == adtarr_size(IntSuite),"3) adtarr_size == 9");
+	adtarr_remove(IntSuite,9);
+	mu_check(9 == adtarr_size(IntSuite));
+
 	for(i = 0;i< ARRSIZE;i++){
-		printf("i->%d : size->%d\n",i,adtarr_size(IntSuite));
-		adtarr_remove(IntSuite,i);
-		printf("::%d\n\n",*(int*)IntSuite->data[i]);
+		adtarr_remove(IntSuite,-1);
 	}
-	//printf("asdasdas:%d\n",adtarr_size(IntSuite));
-	mu_assert(0 == adtarr_size(IntSuite),"4) adtarr_size == 0");
+
+	mu_check(0 == adtarr_size(IntSuite));
+}
+
+MU_TEST(insert_TESTS){
+	//mu_check(adtarr_insert(IntSuite));
 }
 
 MU_TEST(resize_TESTS){
-	int i;
-	adtarr* arr = adtarr_create(5);
-
 	mu_assert(EXIT_FAILURE == adtarr_resize(NULL,11),"1) adtarr_resize returns -1 or EXIT_FAILURE");
 
-	mu_assert(EXIT_FAILURE == adtarr_resize(arr,0),"2) adtarr_resize returns -1 or EXIT_FAILURE");
+	mu_assert(EXIT_FAILURE == adtarr_resize(IntSuite,0),"2) adtarr_resize returns -1 or EXIT_FAILURE");
 
-	//works outside of minunit. otherwise malloc errors.
-	//mu_assert(EXIT_SUCCESS == adtarr_resize(arr,20),"3) adtarr_resize returns 0 or EXIT_SUCCESS");
+	mu_assert(EXIT_SUCCESS == adtarr_resize(IntSuite,20),"3) adtarr_resize returns 0 or EXIT_SUCCESS");
+
+	mu_check(20 == adtarr_capacity(IntSuite));
+
+	mu_check(EXIT_SUCCESS == adtarr_resize(IntSuite,5));
+	mu_check(4 == *(int*)adtarr_get(IntSuite,-1));
 }
 
 MU_TEST_SUITE(test_suite) {
