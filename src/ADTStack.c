@@ -26,6 +26,35 @@
 
 #define SAFE_FREE(x) do { if ((x) != NULL) {free(x); x=NULL;} } while(0)
 
+// EX:
+// void* thisthing = NULL;
+// ADTforeach(stk,thisthing){
+//     //Do things.
+//     printf("::::%d\n",*(int*)thisthing);
+// }
+#define ADTforeach_vptr(obj,item) \
+    for(int keep = 1, \
+            count = 0,\
+            size = obj->size; \
+        keep && count != size; \
+        keep = !keep, count++) \
+      for(item = obj->data[count]; keep; keep = !keep)
+
+// EX: 
+// int num = 0;
+// ADTforeach(int,stk,num){
+//     //Do things.
+//     printf("::::%d\n",num);
+// }
+#define ADTforeach(type,obj,item) \
+    for(int keep = 1, \
+            count = 0,\
+            size = obj->size; \
+        keep && count != size; \
+        keep = !keep, count++) \
+      for(item = *(type*)obj->data[count]; keep; keep = !keep)
+
+
 typedef void* TYPE;
 
 typedef struct

@@ -24,7 +24,34 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 0
+// EX:
+// void* thisthing = NULL;
+// ADTforeach(arr,thisthing){
+//     //Do things.
+//     printf("::::%d\n",*(int*)thisthing);
+// }
+#define ADTforeach_vptr(obj,item) \
+    for(int keep = 1, \
+            count = 0,\
+            size = obj->size; \
+        keep && count != size; \
+        keep = !keep, count++) \
+      for(item = obj->data[count]; keep; keep = !keep)
+
+// EX: 
+// int num = 0;
+// ADTforeach(int,arr,num){
+//     //Do things.
+//     printf("::::%d\n",num);
+// }
+#define ADTforeach(type,obj,item) \
+    for(int keep = 1, \
+            count = 0,\
+            size = obj->size; \
+        keep && count != size; \
+        keep = !keep, count++) \
+      for(item = *(type*)obj->data[count]; keep; keep = !keep)
+
 
 #define SAFE_FREE(x) do { if ((x) != NULL) {free(x); x=NULL;} } while(0)
 
@@ -246,40 +273,23 @@ int adtarr_remove(adtarr* obj, int idx)
     return EXIT_SUCCESS;
 }
 
-#if DEBUG
-
-int main()
+int main(void)
 {
-    int item1 = 39;
-
-    adtarr* arr = adtarr_create(100);
-    printf("arrayCap:%d\n",arr->capacity);
-
-    adtarr_set(arr,88,&item1);
-    adtarr_resize(arr,10);
-    printf("arrayCap:%d\n",arr->capacity);
-
+    int i;
+    adtarr* arr = adtarr_create(10);
     
-    adtarr_set(arr,0,&item1);
-    
-    int temp = *(int*)adtarr_get(arr,0);
-    printf(":::%d\n",temp);
 
-    // adtarrClearItem(arr,0);
+    for(i=0;i<100;i++){
+        adtarr_insert(arr,-1,&i);
+    }
 
-    item1 = 69;
-    adtarr_insert(arr,3,&item1);
+    int thisthing = 0;
+    ADTforeach(int,arr,thisthing){
+        //Do things.
+        printf("::::%d\n",thisthing);
+    }
 
-    temp = *(int*)adtarr_get(arr,3);
-    printf(":::%d\n",temp);
-
-    adtarr_remove(arr,3);
-    printf("::::ZSd\n");
 
     adtarr_free(arr);
-
-
     return 0;
 }
-
-#endif
