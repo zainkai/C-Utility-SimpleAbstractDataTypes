@@ -272,24 +272,3 @@ int adtarr_remove(adtarr* obj, int idx)
 
     return EXIT_SUCCESS;
 }
-
-int main(void)
-{
-    int i;
-    adtarr* arr = adtarr_create(10);
-    
-
-    for(i=0;i<100;i++){
-        adtarr_insert(arr,-1,&i);
-    }
-
-    int thisthing = 0;
-    ADTforeach(int,arr,thisthing){
-        //Do things.
-        printf("::::%d\n",thisthing);
-    }
-
-
-    adtarr_free(arr);
-    return 0;
-}
