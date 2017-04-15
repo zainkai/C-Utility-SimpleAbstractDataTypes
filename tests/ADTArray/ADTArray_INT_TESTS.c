@@ -14,7 +14,10 @@ void setup_int_Test(){
 	IntSuite = adtarr_create(10);
 
 	for(i = 0;i < ARRSIZE;i++){
-		adtarr_set(IntSuite,-1,&i);
+		TYPE temp_item = malloc(sizeof(TYPE));
+		memcpy(temp_item,&i,sizeof(TYPE));
+		IntSuite->size++;
+		IntSuite->data[i] = temp_item;
 	}
 }
 
@@ -94,34 +97,41 @@ MU_TEST(remove_TESTS){
 }
 
 MU_TEST(set_TESTS){
+	int i;
 	int num = 1111;
 
 	mu_check(NULL == adtarr_set(IntSuite,-1,NULL));
 	mu_check(NULL == adtarr_set(NULL,-1,&num));
 	mu_check(NULL == adtarr_set(NULL,-2,&num));
 
-	num = 1111;
-	mu_check(1111 == *(int*)adtarr_set(IntSuite,2,&num));
+	num = 9000;
+	mu_check(9000 == *(int*)adtarr_set(IntSuite,0,&num));
+	mu_check(9000 == *(int*)adtarr_get(IntSuite,0));
 
-	num == 999;
-	mu_check(999 == *(int*)adtarr_set(IntSuite,-1,&num));
-	mu_check(999 == *(int*)adtarr_get(IntSuite,-1));
 
-	// num = 2222;
-	// adtarr_remove(IntSuite,2);
-	// mu_check(EXIT_SUCCESS == adtarr_insert(IntSuite,-1,&num));
-	// mu_check(2222 == *(int*)adtarr_get(IntSuite,-1));
+	num = 3434;
+	mu_check(3434 == *(int*)adtarr_set(IntSuite,-1,&num));
+	mu_check(3434 == *(int*)adtarr_get(IntSuite,-1));
 
-	// num = 3333;
-	// adtarr_remove(IntSuite,0);
-	// mu_check(EXIT_SUCCESS == adtarr_insert(IntSuite,0,&num));
-	// mu_check(3333 == *(int*)adtarr_get(IntSuite,0));
+	num = 2222;
+	adtarr_remove(IntSuite,2);
+	mu_check(2222 == *(int*)adtarr_set(IntSuite,2,&num));
+	mu_check(2222 == *(int*)adtarr_get(IntSuite,2));
+
+	for(i =0;i<ARRSIZE;i++){
+		adtarr_remove(IntSuite,-1);
+	}
+
+	num = 231231;
+	mu_check(NULL == adtarr_set(IntSuite,2,&num));
+	mu_check(231231 == *(int*)adtarr_set(IntSuite,-1,&num));
+	mu_check(231231 == *(int*)adtarr_get(IntSuite,0));
 }
 
 MU_TEST_SUITE(test_suite) {
 	MU_SUITE_CONFIGURE(&setup_int_Test, &teardown_int_Test);
 
-	//adtarr_size
+	// //adtarr_size
 	MU_RUN_TEST(size_TESTS);
 
 	//adtarr_resize
