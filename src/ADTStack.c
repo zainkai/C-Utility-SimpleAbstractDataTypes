@@ -130,9 +130,7 @@ int adtstk_capacity(adtstk* obj){
 
 TYPE adtstk_top(adtstk* obj)
 {
-    if(obj == NULL){
-        return NULL;
-    } else if(obj->size == 0) {
+    if(obj == NULL || obj->size == 0){
         return NULL;
     }
 
@@ -141,9 +139,7 @@ TYPE adtstk_top(adtstk* obj)
 
 int adtstk_push(adtstk* obj, TYPE item)
 {
-    if(obj == NULL || item == NULL){
-        return EXIT_FAILURE;
-    } else if(obj->size == obj->capacity) {
+    if(obj == NULL || item == NULL || obj->size == obj->capacity){
         return EXIT_FAILURE;
     }
 
@@ -157,9 +153,7 @@ int adtstk_push(adtstk* obj, TYPE item)
 }
 
 int adtstk_pop(adtstk* obj){
-    if(obj == NULL){
-        return EXIT_FAILURE;
-    } else if(obj->size == 0) {
+    if(obj == NULL || obj->size == 0){
         return EXIT_FAILURE;
     }
     
