@@ -130,9 +130,10 @@ int adtarr_capacity(adtarr* obj){
 
 int adtarr_chknull(adtarr* obj, int idx)
 {
-    if(obj == NULL || idx < -1){
-        return EXIT_FAILURE;
-    } else if(idx >= obj->capacity || obj->size < idx) {
+    if( obj == NULL ||
+        idx < -1 ||
+        idx >= obj->capacity ||
+        obj->size < idx) {
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = (obj->size == 0 ? 0 : obj->size -1);
@@ -143,9 +144,10 @@ int adtarr_chknull(adtarr* obj, int idx)
 
 TYPE adtarr_get(adtarr* obj, int idx)
 {
-    if(obj == NULL || idx < -1){
-        return NULL;
-    } else if(idx >= obj->capacity || obj->size < idx) {
+    if( obj == NULL ||
+        idx < -1 ||
+        idx >= obj->capacity ||
+        obj->size < idx){
         return NULL;
     } else if(idx == -1) {
         idx = (obj->size == 0 ? 0 : obj->size -1);
@@ -166,9 +168,11 @@ TYPE _adtarr_save(adtarr* obj,int idx, TYPE item)
 //frees and writes over already allocated memory.
 TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
 {
-    if(obj == NULL || idx < -1 || item == NULL){
-        return NULL;
-    } else if(idx >= obj->capacity || obj->size < idx) {
+    if( obj == NULL ||
+        idx < -1 ||
+        item == NULL ||
+        idx >= obj->capacity ||
+        obj->size < idx){
         return NULL;
     } else if(idx == -1) {
         idx = (obj->size == 0 ? 0 : obj->size -1);
@@ -185,9 +189,10 @@ TYPE adtarr_set(adtarr* obj,int idx, TYPE item)
 
 //UNSAFE can cause array to be non contiguous.
 int _adtarr_clearitem(adtarr* obj,int idx){
-    if(obj == NULL || idx < -1){
-        return EXIT_FAILURE;
-    } else if(idx >= obj->capacity || obj->size < idx) {
+    if( obj == NULL ||
+        idx < -1 ||
+        idx >= obj->capacity ||
+        obj->size < idx){
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = (obj->size == 0 ? 0 : obj->size -1);
@@ -231,9 +236,12 @@ int adtarr_insert(adtarr* obj, int idx, TYPE item)
 {
     int i;
 
-    if(obj == NULL || item == NULL || idx < -1){
-        return EXIT_FAILURE;
-    } else if(idx >= obj->capacity || obj->size < idx || obj->size == obj->capacity) {
+    if( obj == NULL ||
+        item == NULL ||
+        idx < -1 ||
+        idx >= obj->capacity ||
+        obj->size < idx ||
+        obj->size == obj->capacity){
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size == 0 ? 0 : obj->size;
@@ -253,9 +261,11 @@ int adtarr_remove(adtarr* obj, int idx)
 {
     int i;
 
-    if(obj == NULL || idx < -1){
-        return EXIT_FAILURE;
-    } else if(idx >= obj->capacity || obj->size < idx || obj->size == 0) {
+    if( obj == NULL ||
+        idx < -1 ||
+        idx >= obj->capacity ||
+        obj->size < idx ||
+        obj->size == 0){
         return EXIT_FAILURE;
     } else if(idx == -1) {
         idx = obj->size == 0 ? 0 : obj->size -1;
