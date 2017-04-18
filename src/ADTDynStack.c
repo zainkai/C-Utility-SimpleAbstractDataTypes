@@ -120,8 +120,7 @@ void _dynstk_freedata(dynstk* obj, unsigned int minidx,unsigned int maxidx)
 }
 
 inline void _dynstk_dynresize(dynstk* obj){
-    float lf_actual = (int)(obj->size/obj->capacity);//floor
-    //float lf = (int)(obj->size/obj->capacity) +1;//ceiling
+    float lf_actual = (obj->size/obj->capacity);
 
     if(lf_actual >= obj->loadFactor){
         dynstk_resize(obj,(int)(obj->capacity * obj->resizeFactor));//floor
